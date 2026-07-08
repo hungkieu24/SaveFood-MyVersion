@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/admin.api';
 import type { AdminRevenueStatsResponse, AdminSubscriptionStatsResponse } from '../../api/admin.api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { TrendingUp, DollarSign, Package, Users, Store } from 'lucide-react';
 import CountUpModule from 'react-countup';
 const CountUp = (CountUpModule as any).default || CountUpModule;
@@ -182,34 +182,33 @@ export default function AdminDashboardPage() {
           <h3 className="text-[15px] font-semibold text-mint-ink mb-4 shrink-0">Gói ĐK Mới (Hàng tháng)</h3>
           <div className="flex-1 min-h-0 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={subChartData}>
+              <BarChart data={subChartData} barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748B', fontSize: 12 }} 
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#64748B', fontSize: 12 }}
                   dy={10}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
                   tick={{ fill: '#64748B', fontSize: 12 }}
+                  allowDecimals={false}
                 />
-                <RechartsTooltip 
+                <RechartsTooltip
                   contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: any) => [value, 'Cửa hàng mới']}
+                  formatter={(value: any) => [value, 'Gói ĐK mới']}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="NewSubscriptions" 
-                  name="Cửa hàng mới"
-                  stroke="#10B981" 
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#10B981', strokeWidth: 2, stroke: '#fff' }}
-                  activeDot={{ r: 6 }}
+                <Bar
+                  dataKey="NewSubscriptions"
+                  name="Gói ĐK mới"
+                  fill="#10B981"
+                  radius={[6, 6, 0, 0]}
+                  label={{ position: 'top', fill: '#10B981', fontSize: 13, fontWeight: 600 }}
                 />
-              </LineChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -225,19 +224,25 @@ export default function AdminDashboardPage() {
                     data={activePlansData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={80}
-                    outerRadius={120}
-                    paddingAngle={5}
+                    innerRadius={35}
+                    outerRadius={55}
+                    paddingAngle={4}
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                    labelLine={true}
                   >
                     {activePlansData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
-                  <RechartsTooltip 
+                  <RechartsTooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    formatter={(value: any, name: any) => [`${value} cửa hàng`, name]}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    iconType="circle"
+                    iconSize={10}
+                    wrapperStyle={{ paddingTop: '15px' }}
+                    formatter={(value) => <span style={{ fontSize: 13, color: '#475569' }}>{value}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>

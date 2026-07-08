@@ -27,13 +27,13 @@ public class UserRepository : IUserRepository
     {
         var query = _set
             .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Include(u => u.StoreStaffs)
+            .AsSplitQuery()
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            var search = request.Search.ToLower();
-            query = query.Where(u => u.Email.ToLower().Contains(search) || u.FullName.ToLower().Contains(search));
+            var search = request.Search.Trim();
+            query = query.Where(u => u.Email.Contains(search) || u.FullName.Contains(search));
         }
 
         if (!string.IsNullOrWhiteSpace(request.StatusFilter) && request.StatusFilter != "All")

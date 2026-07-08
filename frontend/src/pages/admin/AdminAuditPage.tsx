@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/api/client';
 import { FileText, Download, Search, ShieldCheck, TrendingUp, CreditCard, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
 import { clsx } from 'clsx';
 
 interface AuditItem {
@@ -183,20 +184,22 @@ export default function AdminAuditPage() {
           </div>
           <div>
             <label className="block text-[13px] font-medium text-mint-stone mb-1">Hiển thị</label>
-            <select
+            <Select
               value={pageSize}
-              onChange={e => {
-                const newSize = Number(e.target.value);
+              onChange={(val) => {
+                const newSize = Number(val);
                 setPageSize(newSize);
                 fetchReport(1, newSize);
               }}
-              className="px-3 py-2 text-[14px] border border-mint-hairline rounded-lg focus:outline-none focus:ring-2 focus:ring-mint-brand-green/20 focus:border-mint-brand-green bg-white"
-            >
-              <option value={10}>10 dòng</option>
-              <option value={20}>20 dòng</option>
-              <option value={50}>50 dòng</option>
-              <option value={100}>100 dòng</option>
-            </select>
+              options={[
+                { value: 10, label: '10 dòng' },
+                { value: 20, label: '20 dòng' },
+                { value: 50, label: '50 dòng' },
+                { value: 100, label: '100 dòng' }
+              ]}
+              className="min-w-[120px]"
+              buttonClassName="rounded-lg border-mint-hairline py-2 px-3 focus:ring-mint-brand-green/20 focus:border-mint-brand-green text-[14px]"
+            />
           </div>
           <button
             id="btn-load-report"

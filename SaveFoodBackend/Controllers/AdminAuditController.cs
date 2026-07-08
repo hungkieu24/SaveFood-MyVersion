@@ -72,7 +72,7 @@ public class AdminAuditController : ControllerBase
                 .ThenInclude(st => st.StoreStaffs)
                     .ThenInclude(ss => ss.User)
             .Include(s => s.Plan)
-            .Where(s => s.Status == 1 && s.CreatedAt >= fromDate && s.CreatedAt <= toDate && s.OrderCode != null)
+            .Where(s => (s.Status == 0 || s.Status == 1) && s.CreatedAt >= fromDate && s.CreatedAt <= toDate && s.OrderCode != null)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
 
@@ -166,7 +166,7 @@ public class AdminAuditController : ControllerBase
         var subscriptions = await _ctx.StoreSubscriptions
             .Include(s => s.Store).ThenInclude(st => st.StoreStaffs).ThenInclude(ss => ss.User)
             .Include(s => s.Plan)
-            .Where(s => s.Status == 1 && s.CreatedAt >= fromDate && s.CreatedAt <= toDate && s.OrderCode != null)
+            .Where(s => (s.Status == 0 || s.Status == 1) && s.CreatedAt >= fromDate && s.CreatedAt <= toDate && s.OrderCode != null)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
 

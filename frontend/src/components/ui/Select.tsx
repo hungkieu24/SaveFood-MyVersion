@@ -13,11 +13,12 @@ export interface SelectProps {
   options: SelectOption[];
   placeholder?: string;
   className?: string;
+  buttonClassName?: string;
   disabled?: boolean;
   searchable?: boolean;
 }
 
-export function Select({ value, onChange, options, placeholder, className, disabled, searchable }: SelectProps) {
+export function Select({ value, onChange, options, placeholder, className, buttonClassName, disabled, searchable }: SelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -47,7 +48,8 @@ export function Select({ value, onChange, options, placeholder, className, disab
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={cn(
           "w-full flex items-center justify-between px-4 py-2.5 border border-[--color-surface-border] rounded-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-600 transition-colors shadow-sm",
-          disabled && "bg-gray-50 text-gray-400 cursor-not-allowed opacity-70"
+          disabled && "bg-gray-50 text-gray-400 cursor-not-allowed opacity-70",
+          buttonClassName
         )}
       >
         <span className={selectedOption ? "text-gray-800 font-medium" : "text-gray-500"}>

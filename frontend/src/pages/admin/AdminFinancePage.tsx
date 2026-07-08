@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/admin.api';
 import type { WalletTransactionDTO, WithdrawalRequestDTO, CustomerWalletTransactionAdminDTO } from '../../api/admin.api';
 import { CreditCard, ArrowDownCircle, ArrowUpCircle, AlertCircle, CheckCircle, Clock, X } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
 import { clsx } from "clsx";
 
 type TabType = 'ledger' | 'withdrawals' | 'customer-wallets';
@@ -24,6 +25,7 @@ export default function AdminFinancePage() {
 
   // Pagination states
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
 
   // Modal states
@@ -49,15 +51,15 @@ export default function AdminFinancePage() {
     setLoading(true);
     try {
       if (activeTab === 'ledger') {
-        const res = await adminApi.getTransactions(page, 15, searchQuery, startDate, endDate);
+        const res = await adminApi.getTransactions(page, pageSize, searchQuery, startDate, endDate);
         setTransactions(res.items);
         setTotalPages(res.totalPages);
       } else if (activeTab === 'withdrawals') {
-        const res = await adminApi.getWithdrawals(page, 15, statusFilter !== 'all' ? parseInt(statusFilter) : undefined, searchQuery, startDate, endDate);
+        const res = await adminApi.getWithdrawals(page, pageSize, statusFilter !== 'all' ? parseInt(statusFilter) : undefined, searchQuery, startDate, endDate);
         setWithdrawals(res.items);
         setTotalPages(res.totalPages);
       } else if (activeTab === 'customer-wallets') {
-        const res = await adminApi.getCustomerTransactions(page, 15, searchQuery, startDate, endDate);
+        const res = await adminApi.getCustomerTransactions(page, pageSize, searchQuery, startDate, endDate);
         setCustomerTransactions(res.items);
         setTotalPages(res.totalPages);
       }
@@ -73,7 +75,7 @@ export default function AdminFinancePage() {
       fetchData();
     }, 300);
     return () => clearTimeout(timeoutId);
-  }, [activeTab, page, statusFilter, searchQuery, startDate, endDate]);
+  }, [activeTab, page, pageSize, statusFilter, searchQuery, startDate, endDate]);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -211,6 +213,24 @@ export default function AdminFinancePage() {
           >
             Xem tất cả
           </button>
+        </div>
+        <div>
+          <Select
+            value={pageSize}
+            onChange={(val) => {
+              const newSize = Number(val);
+              setPageSize(newSize);
+              setPage(1);
+            }}
+            options={[
+              { value: 15, label: '15 dòng' },
+              { value: 30, label: '30 dòng' },
+              { value: 50, label: '50 dòng' },
+              { value: 100, label: '100 dòng' }
+            ]}
+            className="min-w-[120px]"
+            buttonClassName="rounded-[8px] border-mint-hairline py-2 px-3 focus:ring-mint-brand-green/20 focus:border-mint-brand-green text-[14px]"
+          />
         </div>
         {activeTab === 'withdrawals' && (
           <select 

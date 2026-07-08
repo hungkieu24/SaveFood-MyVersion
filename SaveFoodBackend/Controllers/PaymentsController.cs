@@ -122,7 +122,7 @@ public class PaymentsController : ControllerBase
                             
                             // We must cancel any other active subscriptions for this store to prevent overlap
                             var activeSubs = await _ctx.StoreSubscriptions
-                                                       .Where(s => s.StoreId == subscription.StoreId && s.Status == 1 && s.Id != subscription.Id)
+                                                       .Where(s => s.StoreId == subscription.StoreId && s.Status == 0 && s.Id != subscription.Id)
                                                        .ToListAsync();
                             foreach(var sub in activeSubs)
                             {
@@ -282,7 +282,7 @@ public class PaymentsController : ControllerBase
                             }
 
                             var activeSubs = await _ctx.StoreSubscriptions
-                                                       .Where(s => s.StoreId == subscription.StoreId && s.Status == 1 && s.Id != subscription.Id)
+                                                       .Where(s => s.StoreId == subscription.StoreId && s.Status == 0 && s.Id != subscription.Id)
                                                        .ToListAsync();
                             foreach(var sub in activeSubs)
                             {
