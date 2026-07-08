@@ -197,7 +197,7 @@ namespace SaveFoodBackend.Services
 
             var dtos = stores.Select(s =>
             {
-                var activeSub = s.StoreSubscriptions?.FirstOrDefault();
+                var activeSub = s.StoreSubscriptions?.FirstOrDefault(sub => sub.Status == (byte)SaveFoodBackend.Models.Enums.SubscriptionStatus.Active && sub.EndDate > DateTime.UtcNow);
                 var plan = activeSub?.Plan;
                 var mainCategory = s.Products?.Select(p => p.Category?.Name).FirstOrDefault(c => c != null) ?? "Thực phẩm";
 
@@ -249,7 +249,7 @@ namespace SaveFoodBackend.Services
             }
 
             // Manually fetch subscriptions and products since GetByIdAsync might not include them
-            var activeSub = store.StoreSubscriptions?.FirstOrDefault(sub => sub.StartDate <= DateTime.UtcNow && sub.EndDate >= DateTime.UtcNow);
+            var activeSub = store.StoreSubscriptions?.FirstOrDefault(sub => sub.Status == (byte)SaveFoodBackend.Models.Enums.SubscriptionStatus.Active && sub.EndDate >= DateTime.UtcNow);
             var plan = activeSub?.Plan;
             var mainCategory = store.Products?.Select(p => p.Category?.Name).FirstOrDefault(c => c != null) ?? "Thực phẩm";
 

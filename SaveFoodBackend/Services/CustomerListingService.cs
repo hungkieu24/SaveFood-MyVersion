@@ -144,7 +144,7 @@ public class CustomerListingService : ICustomerListingService
 
     private static CustomerListingDTO MapToDTO(SaveFoodBackend.Models.ClearanceListing l)
     {
-        var activeSub = l.Product.Store.StoreSubscriptions?.FirstOrDefault();
+        var activeSub = l.Product.Store.StoreSubscriptions?.FirstOrDefault(s => s.Status == (byte)SaveFoodBackend.Models.Enums.SubscriptionStatus.Active && s.EndDate > DateTime.UtcNow);
 
         return new CustomerListingDTO
         {
