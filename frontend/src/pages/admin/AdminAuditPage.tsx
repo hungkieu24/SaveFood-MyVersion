@@ -47,6 +47,7 @@ const formatDate = (dateString: string) =>
 const BANK_BIN_MAP: Record<string, string> = {
   '970422': 'MBBank',
   '970436': 'Vietcombank',
+  '01203001': 'Vietcombank', // CITAD code cho Vietcombank
   '970415': 'VietinBank',
   '01201001': 'VietinBank', // CITAD code cho VietinBank
   '970418': 'BIDV',
@@ -57,6 +58,7 @@ const BANK_BIN_MAP: Record<string, string> = {
   '970416': 'ACB',
   '970432': 'VPBank',
   '970423': 'TPBank',
+  '01358001': 'TPBank', // CITAD code cho TPBank
   '970403': 'Sacombank',
   '970441': 'VIB',
   '970443': 'SHB',
