@@ -53,6 +53,7 @@ const BANK_BIN_MAP: Record<string, string> = {
   '970418': 'BIDV',
   '01202001': 'BIDV', // CITAD code cho BIDV
   '970405': 'Agribank',
+  '01204001': 'Agribank', // CITAD code cho Agribank
   '970407': 'Techcombank',
   '01310001': 'Techcombank', // CITAD code cho Techcombank
   '970416': 'ACB',
