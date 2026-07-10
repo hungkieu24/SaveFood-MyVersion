@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaveFoodBackend.Data;
+using ClosedXML.Excel;
 
 namespace SaveFoodBackend.Controllers;
 
@@ -122,9 +124,9 @@ public class AdminAuditController : ControllerBase
         });
     }
 
-    // GET: api/admin/audit/export-csv?from=2026-01-01&to=2026-12-31
-    [HttpGet("export-csv")]
-    public async Task<IActionResult> ExportCsv(
+    // GET: api/admin/audit/export-excel?from=2026-01-01&to=2026-12-31
+    [HttpGet("export-excel")]
+    public async Task<IActionResult> ExportExcel(
         [FromQuery] DateTime? from = null,
         [FromQuery] DateTime? to = null)
     {
@@ -195,23 +197,51 @@ public class AdminAuditController : ControllerBase
 
         var allRows = orderRows.Concat(subRows).OrderByDescending(x => x.Date).ToList();
 
-        // Build CSV with UTF-8 BOM (so Excel reads Vietnamese correctly)
-        var sb = new StringBuilder();
-        sb.AppendLine("Ngày,Loại,Tên khách/Shop,Email,Cửa hàng,Mã đơn,PayOS Reference,Số TK người chuyển,Tên chủ TK,Ngân hàng,Tổng tiền,Doanh thu nền tảng,Hạng mục,Phương thức TT");
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Audit Report");
 
-        foreach (var row in allRows)
+        var headers = new[] { "STT", "Ngày", "Tên khách hàng", "Email", "Mã đơn hàng", "Tên cửa hàng", "Số tiền", "Tổng Tiền", "Thông tin ngân hàng" };
+        for (int i = 0; i < headers.Length; i++)
         {
-            var date = TimeZoneInfo.ConvertTimeFromUtc(row.Date, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"))
-                                   .ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
-            sb.AppendLine($"{date},{row.Type},\"{row.CustomerName}\",{row.CustomerEmail},{row.StoreName},{row.OrderCode},{row.PayOsRef},{row.PayerAccountNumber},\"{row.PayerName}\",{row.PayerBankId},{row.TotalAmount},{row.PlatformRevenue},{row.Category},{row.PaymentMethod}");
+            worksheet.Cell(1, i + 1).Value = headers[i];
+            worksheet.Cell(1, i + 1).Style.Font.Bold = true;
         }
 
-        // UTF-8 BOM
-        var preamble = Encoding.UTF8.GetPreamble();
-        var csvBytes = preamble.Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();
+        int rowIdx = 2;
+        int stt = 1;
+        foreach (var row in allRows)
+        {
+            var dateStr = TimeZoneInfo.ConvertTimeFromUtc(row.Date, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"))
+                                      .ToString("dd/MM/yyyy HH:mm");
 
-        var fileName = $"savefood_audit_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv";
-        return File(csvBytes, "text/csv; charset=utf-8", fileName);
+            string bankInfo = $"{row.PayerBankId} - {row.PayerAccountNumber} - {row.PayerName}";
+            if ((row.PayerBankId == "-" || string.IsNullOrEmpty(row.PayerBankId)) && 
+                (row.PayerAccountNumber == "-" || string.IsNullOrEmpty(row.PayerAccountNumber)))
+            {
+                bankInfo = "-";
+            }
+
+            worksheet.Cell(rowIdx, 1).Value = stt++;
+            worksheet.Cell(rowIdx, 2).Value = dateStr;
+            worksheet.Cell(rowIdx, 3).Value = row.CustomerName;
+            worksheet.Cell(rowIdx, 4).Value = row.CustomerEmail;
+            worksheet.Cell(rowIdx, 5).Value = row.OrderCode;
+            worksheet.Cell(rowIdx, 6).Value = row.StoreName;
+            worksheet.Cell(rowIdx, 7).Value = row.TotalAmount;
+            worksheet.Cell(rowIdx, 8).Value = row.TotalAmount;
+            worksheet.Cell(rowIdx, 9).Value = bankInfo;
+
+            rowIdx++;
+        }
+
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        var content = stream.ToArray();
+        var fileName = $"savefood_audit_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.xlsx";
+
+        return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 }
 

@@ -117,10 +117,10 @@ export default function AdminAuditPage() {
     fetchReport(1);
   }, []);
 
-  const handleExportCsv = async () => {
+  const handleExportExcel = async () => {
     setExporting(true);
     try {
-      const res = await fetch(`${BASE_URL}/admin/audit/export-csv?from=${from}&to=${to}`, {
+      const res = await fetch(`${BASE_URL}/admin/audit/export-excel?from=${from}&to=${to}`, {
         credentials: 'include',
       });
       if (!res.ok) throw new Error('Export thất bại');
@@ -128,11 +128,11 @@ export default function AdminAuditPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `savefood_audit_${from}_${to}.csv`;
+      a.download = `savefood_audit_${from}_${to}.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err: any) {
-      setError(err.message || 'Lỗi khi xuất CSV');
+      setError(err.message || 'Lỗi khi xuất Excel');
     } finally {
       setExporting(false);
     }
@@ -152,13 +152,13 @@ export default function AdminAuditPage() {
           </p>
         </div>
         <button
-          id="btn-export-csv"
-          onClick={handleExportCsv}
+          id="btn-export-excel"
+          onClick={handleExportExcel}
           disabled={exporting || !data}
           className="flex items-center gap-2 px-4 py-2 bg-mint-brand-green text-white text-[14px] font-medium rounded-lg hover:bg-mint-brand-green/90 transition-colors disabled:opacity-50"
         >
           <Download className="w-4 h-4" />
-          {exporting ? 'Đang xuất...' : 'Xuất CSV'}
+          {exporting ? 'Đang xuất...' : 'Xuất Excel'}
         </button>
       </div>
 
