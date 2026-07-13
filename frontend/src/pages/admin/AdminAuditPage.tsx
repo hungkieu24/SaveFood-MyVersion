@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/api/client';
-import { FileText, Download, Search, ShieldCheck, TrendingUp, CreditCard, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Download, Search, ShieldCheck, TrendingUp, CreditCard, RefreshCw, ChevronLeft, ChevronRight, ShoppingBag, Package } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 import { clsx } from 'clsx';
 
@@ -215,6 +215,30 @@ export default function AdminAuditPage() {
           </button>
         </div>
       </div>
+
+      {/* Summary Cards */}
+      {data && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white border border-mint-hairline rounded-[12px] p-5 shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+              <ShoppingBag className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-[13px] font-medium text-mint-stone mb-1">Tổng số đơn hàng</p>
+              <p className="text-[24px] font-bold text-mint-ink">{data.summary.totalOrders}</p>
+            </div>
+          </div>
+          <div className="bg-white border border-mint-hairline rounded-[12px] p-5 shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center">
+              <Package className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-[13px] font-medium text-mint-stone mb-1">Tổng số đơn mua gói</p>
+              <p className="text-[24px] font-bold text-mint-ink">{data.summary.totalSubscriptions}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-[14px] px-4 py-3 rounded-lg mb-4">

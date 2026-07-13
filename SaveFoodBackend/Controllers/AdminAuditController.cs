@@ -117,7 +117,7 @@ public class AdminAuditController : ControllerBase
             currentPage = page,
             summary = new
             {
-                totalOrders = orderItems.Count,
+                totalOrders = orderItems.Select(x => x.OrderCode).Distinct().Count(),
                 totalSubscriptions = subscriptionItems.Count,
                 totalPlatformRevenue = orderItems.Sum(x => x.PlatformRevenue) + subscriptionItems.Sum(x => x.PlatformRevenue)
             }
